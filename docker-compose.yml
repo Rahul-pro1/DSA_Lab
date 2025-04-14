@@ -1,0 +1,50 @@
+services:
+  landing_page:
+    build:
+      context: ./landing_page
+    ports:
+      - "8507:8507"
+
+  problem_repo_service:
+    build:
+      context: ./problem_repo
+    ports:
+      - "8501:8501"
+    environment:
+      - MONGODB_URI=${MONGODB_URI}
+    env_file:
+      - ./.env
+
+  code_executor_service:
+    build:
+      context: ./code_exec
+    ports:
+      - "8502:8502"
+    environment:
+      - MONGODB_URI=${MONGODB_URI}
+    env_file:
+      - ./.env
+
+  bfs_dfs_service:
+    build:
+      context: ./BFS_DFS
+    ports:
+      - "8503:8503"
+
+  dij_fw_service:
+    build:
+      context: ./DIJ_FL-W
+    ports:
+      - "8504:8504"
+
+  sorting_service:
+    build:
+      context: ./Sorting
+    ports:
+      - "8505:8505"
+
+  tree_traversal_service:
+    build:
+      context: ./Tree Traversal
+    ports:
+      - "8506:8506"
