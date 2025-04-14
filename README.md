@@ -41,3 +41,10 @@ docker-compose up --build
 
 ### 4. Access the application
 Once the services are running, open your browser and visit http://localhost:8507, which will display the landing page.
+
+### Tech Stack
+- **Python:** Primary language for implementing backend logic, algorithms, and visualizations.
+- **Docker:** To containerize & manage each microservice.
+- **Streamlit:** For building interactive web interfaces for each microservice.
+- **MongoDB:** To store problems, test cases, and related metadata.
+- **GraphViz:** Used in the Tree Traversal visualizer for rendering graph/tree structures.
