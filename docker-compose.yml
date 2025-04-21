@@ -14,6 +14,8 @@ services:
       - MONGODB_URI=${MONGODB_URI}
     env_file:
       - ./.env
+    depends_on:
+      - notification_service
 
   code_executor_service:
     build:
@@ -48,3 +50,26 @@ services:
       context: ./Tree Traversal
     ports:
       - "8506:8506"
+
+  student_feedback_service:
+    build:
+      context: ./student_feedback
+    ports:
+      - "8000:8000"
+    environment:
+      - MONGODB_URL=${MONGODB_URL}
+    env_file:
+      - ./.env
+
+  notification_service:
+    build:
+      context: ./notification_service
+    ports:
+      - "5000:5000"
+    environment:
+      - EMAIL_HOST=${EMAIL_HOST}
+      - EMAIL_PORT=${EMAIL_PORT}
+      - EMAIL_USER=${EMAIL_USER}
+      - EMAIL_PASSWORD=${EMAIL_PASSWORD}
+    env_file:
+      - ./.env

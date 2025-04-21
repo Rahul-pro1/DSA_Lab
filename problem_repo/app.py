@@ -2,6 +2,11 @@ import streamlit as st
 from db_config import problems_collection
 import urllib.parse
 import bson
+import requests
+from datetime import datetime
+
+FEEDBACK_API_URL = "http://student_feedback_service:8000/mentor/feedback/create"  
+NOTIFICATION_URL = "http://notification_service:5000/send_notification" 
 
 st.set_page_config(page_title="Problem Repository", layout="wide")
 st.title("🧠 Problem Repository")
@@ -31,6 +36,36 @@ if problems:
                 st.success(f"Deleted problem: {p['title']}")
                 st.rerun()
 
+            st.markdown("---")
+            st.markdown("### ✍️ Provide Feedback")
+
+            with st.form(key=f"feedback_form_{str(p['_id'])}"):
+                student_id = st.text_input("Student ID", key=f"student_{p['_id']}")
+                mentor_id = st.text_input("Mentor ID", key=f"mentor_{p['_id']}")
+                feedback_text = st.text_area("Feedback", key=f"fb_{p['_id']}")
+                highlights = st.text_area("Highlights (comma-separated)", key=f"hl_{p['_id']}")
+                submitted = st.form_submit_button("Submit Feedback")
+
+                if submitted:
+                    if not all([student_id, mentor_id, feedback_text]):
+                        st.warning("Please fill all required fields.")
+                    else:
+                        payload = {
+                            "student_id": student_id.strip(),
+                            "mentor_id": mentor_id.strip(),
+                            "feedback": feedback_text.strip(),
+                            "date": datetime.utcnow().isoformat(),
+                            "highlights": [h.strip() for h in highlights.split(",") if h.strip()]
+                        }
+
+                        try:
+                            res = requests.post(FEEDBACK_API_URL, json=payload)
+                            if res.status_code == 200:
+                                st.success("✅ Feedback submitted successfully!")
+                            else:
+                                st.error(f"Failed to submit feedback: {res.json().get('message')}")
+                        except Exception as e:
+                            st.error(f"Error: {e}")
 else:
     st.info("No problems found.")
 
@@ -53,7 +88,7 @@ selected_langs = st.multiselect(
 )
 
 test_inputs = st.text_area(
-    "Test Inputs (one per line)", 
+    "Test Inputs (one per line)",
     value="\n".join(tc["input"] for tc in editing_data["test_cases"]) if editing_data else ""
 ).splitlines()
 
@@ -80,6 +115,25 @@ if st.button("💾 Save"):
         else:
             problems_collection.insert_one(problem_doc)
             st.success("✅ Problem added!")
+
+            try:
+                notif_payload = {
+                    "student_name": "All Students",
+                    "student_email": "rahulsiv2108@gmail.com",  
+                    "email_subject": "🆕 New DSA Problem Added!",
+                    "email_body": f"A new problem titled '{title}' has been added. Check it out in the Problem Repository!",
+                    "reminder_datetime": "",
+                    "reminder_subject": "",
+                    "reminder_message": ""
+                }
+
+                notif_response = requests.post(NOTIFICATION_URL, data=notif_payload)
+                if notif_response.status_code == 200:
+                    st.success("📧 Notification sent!")
+                else:
+                    st.warning("⚠️ Failed to send notification.")
+            except Exception as e:
+                st.warning(f"⚠️ Notification error: {e}")
 
         st.rerun()
     else:
