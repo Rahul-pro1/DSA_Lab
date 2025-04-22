@@ -134,6 +134,12 @@ async def list_mentor_feedbacks(mentor_id: str):
 async def list_student_feedbacks(student_id: str):
     return [serialize_doc(feedback) for feedback in feedbacks_collection.find({"student_id": student_id})]
 
+# --------------------- GENERAL ---------------------
+
+@app.get("/feedbacks")
+async def get_all_feedbacks():
+    return [serialize_doc(fb) for fb in feedbacks_collection.find()]
+
 # --------------------- MAIN ---------------------
 
 if __name__ == "__main__":

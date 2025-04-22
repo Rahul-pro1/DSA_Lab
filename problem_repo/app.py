@@ -5,14 +5,15 @@ import bson
 import requests
 from datetime import datetime
 
-FEEDBACK_API_URL = "http://student_feedback_service:8000/mentor/feedback/create"  
-NOTIFICATION_URL = "http://notification_service:5000/send_notification" 
+FEEDBACK_API_URL = "http://student_feedback_service:8000/mentor/feedback/create"
+GET_FEEDBACKS_URL = "http://student_feedback_service:8000/feedbacks"
+NOTIFICATION_URL = "http://notification_service:5000/send_notification"
 
 st.set_page_config(page_title="Problem Repository", layout="wide")
 st.title("🧠 Problem Repository")
 
+# -------------------- List Problems --------------------
 problems = list(problems_collection.find({}))
-
 st.subheader("📋 Existing Problems")
 if problems:
     for p in problems:
@@ -35,43 +36,65 @@ if problems:
                 problems_collection.delete_one({"_id": p["_id"]})
                 st.success(f"Deleted problem: {p['title']}")
                 st.rerun()
-
-            st.markdown("---")
-            st.markdown("### ✍️ Provide Feedback")
-
-            with st.form(key=f"feedback_form_{str(p['_id'])}"):
-                student_id = st.text_input("Student ID", key=f"student_{p['_id']}")
-                mentor_id = st.text_input("Mentor ID", key=f"mentor_{p['_id']}")
-                feedback_text = st.text_area("Feedback", key=f"fb_{p['_id']}")
-                highlights = st.text_area("Highlights (comma-separated)", key=f"hl_{p['_id']}")
-                submitted = st.form_submit_button("Submit Feedback")
-
-                if submitted:
-                    if not all([student_id, mentor_id, feedback_text]):
-                        st.warning("Please fill all required fields.")
-                    else:
-                        payload = {
-                            "student_id": student_id.strip(),
-                            "mentor_id": mentor_id.strip(),
-                            "feedback": feedback_text.strip(),
-                            "date": datetime.utcnow().isoformat(),
-                            "highlights": [h.strip() for h in highlights.split(",") if h.strip()]
-                        }
-
-                        try:
-                            res = requests.post(FEEDBACK_API_URL, json=payload)
-                            if res.status_code == 200:
-                                st.success("✅ Feedback submitted successfully!")
-                            else:
-                                st.error(f"Failed to submit feedback: {res.json().get('message')}")
-                        except Exception as e:
-                            st.error(f"Error: {e}")
 else:
     st.info("No problems found.")
 
+# -------------------- Display All Feedbacks --------------------
+st.subheader("🗂️ All Feedbacks")
+try:
+    res = requests.get(GET_FEEDBACKS_URL)
+    if res.status_code == 200:
+        feedbacks = res.json()
+        if feedbacks:
+            for fb in feedbacks:
+                with st.expander(f"📝 Feedback for {fb.get('student_name', fb['student_id'])} by {fb.get('mentor_name', fb['mentor_id'])}"):
+                    st.markdown(f"**Date:** {fb['date']}")
+                    st.markdown(f"**Feedback:** {fb['feedback']}")
+                    if fb.get("highlights"):
+                        st.markdown("**Highlights:**")
+                        for h in fb["highlights"]:
+                            st.markdown(f"- {h}")
+        else:
+            st.info("No feedbacks available.")
+    else:
+        st.warning("Could not fetch feedbacks.")
+except Exception as e:
+    st.error(f"Error fetching feedbacks: {e}")
+
+# -------------------- Feedback Form --------------------
+st.subheader("✍️ Submit New Feedback")
+with st.form(key="global_feedback_form"):
+    student_id = st.text_input("Student ID")
+    mentor_id = st.text_input("Mentor ID")
+    feedback_text = st.text_area("Feedback")
+    highlights = st.text_area("Highlights (comma-separated)")
+    submitted = st.form_submit_button("Submit Feedback")
+
+    if submitted:
+        if not all([student_id, mentor_id, feedback_text]):
+            st.warning("Please fill all required fields.")
+        else:
+            payload = {
+                "student_id": student_id.strip(),
+                "mentor_id": mentor_id.strip(),
+                "feedback": feedback_text.strip(),
+                "date": datetime.utcnow().isoformat(),
+                "highlights": [h.strip() for h in highlights.split(",") if h.strip()]
+            }
+
+            try:
+                res = requests.post(FEEDBACK_API_URL, json=payload)
+                if res.status_code == 200:
+                    st.success("✅ Feedback submitted successfully!")
+                    st.rerun()
+                else:
+                    st.error(f"Failed to submit feedback: {res.json().get('message')}")
+            except Exception as e:
+                st.error(f"Error: {e}")
+
+# -------------------- Problem Editor --------------------
 is_editing = st.session_state.get("editing", None)
 editing_data = None
-
 if is_editing:
     editing_data = problems_collection.find_one({"_id": bson.ObjectId(is_editing)})
     st.subheader(f"✏️ Edit Problem: {editing_data['title']}")
@@ -119,7 +142,7 @@ if st.button("💾 Save"):
             try:
                 notif_payload = {
                     "student_name": "All Students",
-                    "student_email": "rahulsiv2108@gmail.com",  
+                    "student_email": "rahulsiv2108@gmail.com",
                     "email_subject": "🆕 New DSA Problem Added!",
                     "email_body": f"A new problem titled '{title}' has been added. Check it out in the Problem Repository!",
                     "reminder_datetime": "",
