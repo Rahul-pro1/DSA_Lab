@@ -140,14 +140,15 @@ if st.button("💾 Save"):
             st.success("✅ Problem added!")
 
             try:
+                reminder_datetime = datetime.now().strftime("%Y-%m-%d %H:%M:%S")
                 notif_payload = {
                     "student_name": "All Students",
                     "student_email": "rahulsiv2108@gmail.com",
                     "email_subject": "🆕 New DSA Problem Added!",
                     "email_body": f"A new problem titled '{title}' has been added. Check it out in the Problem Repository!",
-                    "reminder_datetime": "",
-                    "reminder_subject": "",
-                    "reminder_message": ""
+                    "reminder_datetime": reminder_datetime,
+                    "reminder_subject": "New DSA Problem",
+                    "reminder_message": "New DSA Problem"
                 }
 
                 notif_response = requests.post(NOTIFICATION_URL, data=notif_payload)
