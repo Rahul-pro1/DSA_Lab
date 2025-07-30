@@ -7,6 +7,6 @@ services:
     environment:
       - SMTP_SERVER=smtp.gmail.com
       - SMTP_PORT=587
-      - SMTP_USERNAME=mdpatil2004@gmail.com
-      - SMTP_PASSWORD=hfml pxnr ppjo qeva
-      - SENDER_EMAIL=mdpatil2004@gmail.com
+      - SMTP_USERNAME=
+      - SMTP_PASSWORD=
+      - SENDER_EMAIL=
