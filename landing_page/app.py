@@ -1,18 +1,19 @@
 import streamlit as st
 
-st.set_page_config(page_title="AlgoLand", layout="centered")
+st.set_page_config(page_title="DSA_Lab", layout="centered")
 
-st.title("🚀 Algorithm Visualizer & Code Execution Hub")
+st.title("DSA Lab: Algorithm Visualizer & Problem Solving Hub")
 st.write("Select a module below to get started:")
 
 pages = {
-    "🧠 Problem Repository": "http://localhost:8501",
-    "🌲 Tree Traversals": "http://localhost:8506",
-    "📊 Sorting Visualizer": "http://localhost:8505",
-    "🔁 BFS & DFS": "http://localhost:8503",
-    "📍 Dijkstra / Floyd-Warshall": "http://localhost:8504"
+    "Problem Repository": "/problem-repo",
+    "Tree Traversals": "/tree-traversal",
+    "Sorting Visualizer": "/sorting",
+    "BFS & DFS": "/bfs-dfs",
+    "Dijkstra / Floyd-Warshall": "/dijkstra-floyd",
+    "Code Execution": "/code-exec"
 }
 
-for label, url in pages.items():
+for label, path in pages.items():
     if st.button(label):
-        st.markdown(f'<meta http-equiv="refresh" content="0; URL={url}">', unsafe_allow_html=True)
+        st.markdown(f'<meta http-equiv="refresh" content="0; URL={path}">', unsafe_allow_html=True)

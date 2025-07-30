@@ -2,19 +2,15 @@ import streamlit as st
 from db_config import problems_collection
 import urllib.parse
 import bson
-import requests
-from datetime import datetime
-
-FEEDBACK_API_URL = "http://student_feedback_service:8000/mentor/feedback/create"
-GET_FEEDBACKS_URL = "http://student_feedback_service:8000/feedbacks"
-NOTIFICATION_URL = "http://notification_service:5000/send_notification"
 
 st.set_page_config(page_title="Problem Repository", layout="wide")
-st.title("🧠 Problem Repository")
+st.title("Problem Repository")
 
-# -------------------- List Problems --------------------
+if st.button("Back to Home"):
+    st.markdown('<meta http-equiv="refresh" content="0; URL=/">', unsafe_allow_html=True)
+
 problems = list(problems_collection.find({}))
-st.subheader("📋 Existing Problems")
+st.subheader("Existing Problems")
 if problems:
     for p in problems:
         with st.expander(p["title"]):
@@ -23,14 +19,14 @@ if problems:
             st.markdown(f"**Output Format:** {p['output_format']}")
             st.markdown(f"**Supported Languages:** {', '.join(p['language'])}")
             st.markdown(f"**Test Cases:**")
-            solve_url = f"http://localhost:8502/?title={urllib.parse.quote(p['title'])}"
+            solve_url = f"/code-exec/?title={urllib.parse.quote(p['title'])}"
             st.markdown(f"[🛠 Solve Now]({solve_url})", unsafe_allow_html=True)
 
             for i, tc in enumerate(p["test_cases"]):
                 st.code(f"Input {i+1}: {tc['input']}\nOutput {i+1}: {tc['output']}")
 
             col1, col2 = st.columns([1, 1])
-            if col1.button("✏️ Edit", key=f"edit_{str(p['_id'])}"):
+            if col1.button("Edit", key=f"edit_{str(p['_id'])}"):
                 st.session_state["editing"] = str(p["_id"])
             if col2.button("🗑️ Delete", key=f"delete_{str(p['_id'])}"):
                 problems_collection.delete_one({"_id": p["_id"]})
@@ -39,67 +35,13 @@ if problems:
 else:
     st.info("No problems found.")
 
-# -------------------- Display All Feedbacks --------------------
-st.subheader("🗂️ All Feedbacks")
-try:
-    res = requests.get(GET_FEEDBACKS_URL)
-    if res.status_code == 200:
-        feedbacks = res.json()
-        if feedbacks:
-            for fb in feedbacks:
-                with st.expander(f"📝 Feedback for {fb.get('student_name', fb['student_id'])} by {fb.get('mentor_name', fb['mentor_id'])}"):
-                    st.markdown(f"**Date:** {fb['date']}")
-                    st.markdown(f"**Feedback:** {fb['feedback']}")
-                    if fb.get("highlights"):
-                        st.markdown("**Highlights:**")
-                        for h in fb["highlights"]:
-                            st.markdown(f"- {h}")
-        else:
-            st.info("No feedbacks available.")
-    else:
-        st.warning("Could not fetch feedbacks.")
-except Exception as e:
-    st.error(f"Error fetching feedbacks: {e}")
-
-# -------------------- Feedback Form --------------------
-st.subheader("✍️ Submit New Feedback")
-with st.form(key="global_feedback_form"):
-    student_id = st.text_input("Student ID")
-    mentor_id = st.text_input("Mentor ID")
-    feedback_text = st.text_area("Feedback")
-    highlights = st.text_area("Highlights (comma-separated)")
-    submitted = st.form_submit_button("Submit Feedback")
-
-    if submitted:
-        if not all([student_id, mentor_id, feedback_text]):
-            st.warning("Please fill all required fields.")
-        else:
-            payload = {
-                "student_id": student_id.strip(),
-                "mentor_id": mentor_id.strip(),
-                "feedback": feedback_text.strip(),
-                "date": datetime.utcnow().isoformat(),
-                "highlights": [h.strip() for h in highlights.split(",") if h.strip()]
-            }
-
-            try:
-                res = requests.post(FEEDBACK_API_URL, json=payload)
-                if res.status_code == 200:
-                    st.success("✅ Feedback submitted successfully!")
-                    st.rerun()
-                else:
-                    st.error(f"Failed to submit feedback: {res.json().get('message')}")
-            except Exception as e:
-                st.error(f"Error: {e}")
-
-# -------------------- Problem Editor --------------------
 is_editing = st.session_state.get("editing", None)
 editing_data = None
 if is_editing:
     editing_data = problems_collection.find_one({"_id": bson.ObjectId(is_editing)})
-    st.subheader(f"✏️ Edit Problem: {editing_data['title']}")
+    st.subheader(f"Edit Problem: {editing_data['title']}")
 else:
-    st.subheader("➕ Add New Problem")
+    st.subheader("Add New Problem")
 
 title = st.text_input("Title", value=editing_data["title"] if editing_data else "")
 description = st.text_area("Description", value=editing_data["description"] if editing_data else "")
@@ -120,7 +62,7 @@ test_outputs = st.text_area(
     value="\n".join(tc["output"] for tc in editing_data["test_cases"]) if editing_data else ""
 ).splitlines()
 
-if st.button("💾 Save"):
+if st.button("Save"):
     if title and description and input_format and output_format and len(test_inputs) == len(test_outputs):
         problem_doc = {
             "title": title,
@@ -133,31 +75,11 @@ if st.button("💾 Save"):
 
         if editing_data:
             problems_collection.update_one({"_id": editing_data["_id"]}, {"$set": problem_doc})
-            st.success("✅ Problem updated!")
+            st.success("Problem updated!")
             del st.session_state["editing"]
         else:
             problems_collection.insert_one(problem_doc)
-            st.success("✅ Problem added!")
-
-            try:
-                reminder_datetime = datetime.now().strftime("%Y-%m-%d %H:%M:%S")
-                notif_payload = {
-                    "student_name": "All Students",
-                    "student_email": "rahulsiv2108@gmail.com",
-                    "email_subject": "🆕 New DSA Problem Added!",
-                    "email_body": f"A new problem titled '{title}' has been added. Check it out in the Problem Repository!",
-                    "reminder_datetime": reminder_datetime,
-                    "reminder_subject": "New DSA Problem",
-                    "reminder_message": "New DSA Problem"
-                }
-
-                notif_response = requests.post(NOTIFICATION_URL, data=notif_payload)
-                if notif_response.status_code == 200:
-                    st.success("📧 Notification sent!")
-                else:
-                    st.warning("⚠️ Failed to send notification.")
-            except Exception as e:
-                st.warning(f"⚠️ Notification error: {e}")
+            st.success("Problem added!")
 
         st.rerun()
     else:

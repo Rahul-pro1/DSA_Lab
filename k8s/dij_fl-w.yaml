@@ -1,0 +1,30 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: dij-flw
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: dij-flw
+  template:
+    metadata:
+      labels:
+        app: dij-flw
+    spec:
+      containers:
+        - name: dij-flw
+          image: rahulsivakumar/dij_fl-w:latest
+          ports:
+            - containerPort: 8504
+
+apiVersion: v1
+kind: Service
+metadata:
+  name: dij-flw
+spec:
+  selector:
+    app: dij-flw
+  ports:
+    - port: 80
+      targetPort: 8504

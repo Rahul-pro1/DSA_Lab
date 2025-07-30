@@ -1,0 +1,30 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: bfs-dfs
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: bfs-dfs
+  template:
+    metadata:
+      labels:
+        app: bfs-dfs
+    spec:
+      containers:
+        - name: bfs-dfs
+          image: rahulsivakumar/bfs_dfs:latest
+          ports:
+            - containerPort: 8503
+
+apiVersion: v1
+kind: Service
+metadata:
+  name: bfs-dfs
+spec:
+  selector:
+    app: bfs-dfs
+  ports:
+    - port: 80
+      targetPort: 8503

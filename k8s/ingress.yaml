@@ -1,0 +1,61 @@
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+  name: dsa-lab
+  namespace: dsa-lab
+  annotations:
+    nginx.ingress.kubernetes.io/rewrite-target: /
+spec:
+  rules:
+    - host: dsa.lab.local
+      http:
+        paths:
+          - path: /landing-page
+            pathType: Prefix
+            backend:
+              service:
+                name: landing-page-service
+                port:
+                  number: 80
+          - path: /problem-repo
+            pathType: Prefix
+            backend:
+              service:
+                name: problem-repo
+                port:
+                  number: 80
+          - path: /code-exec
+            pathType: Prefix
+            backend:
+              service:
+                name: code-exec
+                port:
+                  number: 80
+          - path: /bfs-dfs
+            pathType: Prefix
+            backend:
+              service:
+                name: bfs-dfs
+                port:
+                  number: 80
+          - path: /dij-flw
+            pathType: Prefix
+            backend:
+              service:
+                name: dij-flw
+                port:
+                  number: 80
+          - path: /sorting
+            pathType: Prefix
+            backend:
+              service:
+                name: sorting
+                port:
+                  number: 80
+          - path: /tree-traversal
+            pathType: Prefix
+            backend:
+              service:
+                name: tree-traversal
+                port:
+                  number: 80

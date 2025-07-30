@@ -3,6 +3,8 @@ import numpy as np
 
 st.set_page_config(page_title="Sorting Algorithm Visualizer")
 st.title("🔢 Sorting Algorithm Visualizer")
+if st.button("Back to Home"):
+    st.markdown('<meta http-equiv="refresh" content="0; URL=/">', unsafe_allow_html=True)
 
 if 'array' not in st.session_state:
     st.session_state.array = []

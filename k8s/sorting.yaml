@@ -1,0 +1,30 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: sorting
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: sorting
+  template:
+    metadata:
+      labels:
+        app: sorting
+    spec:
+      containers:
+        - name: sorting
+          image: rahulsivakumar/sorting:latest
+          ports:
+            - containerPort: 8505
+
+apiVersion: v1
+kind: Service
+metadata:
+  name: sorting
+spec:
+  selector:
+    app: sorting
+  ports:
+    - port: 80
+      targetPort: 8505

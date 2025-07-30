@@ -98,7 +98,11 @@ def fetch_all_problems():
     return list(problems_collection.find({}, {"_id": 0}))
 
 st.set_page_config(page_title="Code Execution Platform", layout="wide")
-st.title("💻 Code Execution & Validation App")
+st.title("Code Execution & Validation App")
+if st.button("Back to Home"):
+    st.markdown('<meta http-equiv="refresh" content="0; URL=/">', unsafe_allow_html=True)
+if st.button("Back to Problem Repository"):
+    st.markdown('<meta http-equiv="refresh" content="0; URL=/problem-repo">', unsafe_allow_html=True)
 
 all_problems = fetch_all_problems()
 problem_titles = [p["title"] for p in all_problems]
@@ -140,6 +144,6 @@ if all_problems:
                     st.warning(f"**Error:** {err}")
                 st.write("---")
     else:
-        st.warning("⚠️ No valid problem selected via query parameters.")
+        st.warning("No valid problem selected via query parameters.")
 else:
     st.warning("No problems found. Please add one from the Problem Repository.")

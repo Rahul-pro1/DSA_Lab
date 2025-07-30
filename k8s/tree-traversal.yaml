@@ -1,0 +1,30 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: tree-traversal
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: tree-traversal
+  template:
+    metadata:
+      labels:
+        app: tree-traversal
+    spec:
+      containers:
+        - name: tree-traversal
+          image: rahulsivakumar/tree_traversal:latest
+          ports:
+            - containerPort: 8506
+
+apiVersion: v1
+kind: Service
+metadata:
+  name: tree-traversal
+spec:
+  selector:
+    app: tree-traversal
+  ports:
+    - port: 80
+      targetPort: 8506
