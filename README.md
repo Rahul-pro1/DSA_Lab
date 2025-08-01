@@ -64,13 +64,19 @@ To access via the custom domain:
 
 - Open `/etc/hosts` (Linux/Mac) or `C:\Windows\System32\drivers\etc\hosts` (Windows) and add:
 ```
-127.0.0.1 dsa.lab.local
+127.0.0.1 landing.dsa.lab.local
+127.0.0.1 repo.dsa.lab.local
+127.0.0.1 exec.dsa.lab.local
+127.0.0.1 bfs.dsa.lab.local
+127.0.0.1 dij.dsa.lab.local
+127.0.0.1 sort.dsa.lab.local
+127.0.0.1 tree.dsa.lab.local
 ```
 
 ### 6. Access the application
 Open your browser and go to:
 ```
-http://dsa.lab.local/landing-page
+http://landing.dsa.lab.local/landing-page
 ```
 
 ### Tech Stack
