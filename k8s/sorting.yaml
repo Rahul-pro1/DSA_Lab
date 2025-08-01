@@ -2,6 +2,7 @@ apiVersion: apps/v1
 kind: Deployment
 metadata:
   name: sorting
+  namespace: dsa-lab
 spec:
   replicas: 1
   selector:
@@ -16,15 +17,18 @@ spec:
         - name: sorting
           image: rahulsivakumar/sorting:latest
           ports:
-            - containerPort: 8505
+            - containerPort: 8501
+
+---
 
 apiVersion: v1
 kind: Service
 metadata:
   name: sorting
+  namespace: dsa-lab
 spec:
   selector:
     app: sorting
   ports:
     - port: 80
-      targetPort: 8505
+      targetPort: 8501

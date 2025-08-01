@@ -99,10 +99,13 @@ def fetch_all_problems():
 
 st.set_page_config(page_title="Code Execution Platform", layout="wide")
 st.title("Code Execution & Validation App")
+
 if st.button("Back to Home"):
-    st.markdown('<meta http-equiv="refresh" content="0; URL=/">', unsafe_allow_html=True)
+    st.markdown('<meta http-equiv="refresh" content="0; URL=http://landing.dsa.lab.local">', unsafe_allow_html=True)
+
 if st.button("Back to Problem Repository"):
-    st.markdown('<meta http-equiv="refresh" content="0; URL=/problem-repo">', unsafe_allow_html=True)
+    st.markdown('<meta http-equiv="refresh" content="0; URL=http://repo.dsa.lab.local">', unsafe_allow_html=True)
+
 
 all_problems = fetch_all_problems()
 problem_titles = [p["title"] for p in all_problems]

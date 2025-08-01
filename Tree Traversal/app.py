@@ -128,7 +128,7 @@ def generate_postorder_traversal_steps(tree_structure):
 st.set_page_config(page_title="Binary Tree Traversal Visualizer", layout="wide")
 st.title("Binary Tree Traversal Visualizer")
 if st.button("Back to Home"):
-    st.markdown('<meta http-equiv="refresh" content="0; URL=/">', unsafe_allow_html=True)
+    st.markdown('<meta http-equiv="refresh" content="0; URL=http://landing.dsa.lab.local">', unsafe_allow_html=True)
 
 st.sidebar.header("Binary Tree Input")
 for i in range(tree_size):

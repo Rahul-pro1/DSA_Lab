@@ -8,7 +8,7 @@ import heapq
 st.set_page_config(page_title="Graph Algorithm Visualizer", layout="wide")
 st.title("Graph Algorithm Visualizer")
 if st.button("Back to Home"):
-    st.markdown('<meta http-equiv="refresh" content="0; URL=/">', unsafe_allow_html=True)
+    st.markdown('<meta http-equiv="refresh" content="0; URL=http://landing.dsa.lab.local">', unsafe_allow_html=True)
 
 st.sidebar.header("Graph Builder")
 nodes_input = st.sidebar.text_input("Enter nodes (comma-separated)", value="A,B,C,D")

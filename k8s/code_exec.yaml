@@ -2,6 +2,7 @@ apiVersion: apps/v1
 kind: Deployment
 metadata:
   name: code-exec
+  namespace: dsa-lab
 spec:
   replicas: 1
   selector:
@@ -16,15 +17,18 @@ spec:
         - name: code-exec
           image: rahulsivakumar/code_exec:latest
           ports:
-            - containerPort: 8502
+            - containerPort: 8501
+
+---
 
 apiVersion: v1
 kind: Service
 metadata:
   name: code-exec
+  namespace: dsa-lab
 spec:
   selector:
     app: code-exec
   ports:
     - port: 80
-      targetPort: 8502
+      targetPort: 8501

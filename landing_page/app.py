@@ -6,12 +6,11 @@ st.title("DSA Lab: Algorithm Visualizer & Problem Solving Hub")
 st.write("Select a module below to get started:")
 
 pages = {
-    "Problem Repository": "/problem-repo",
-    "Tree Traversals": "/tree-traversal",
-    "Sorting Visualizer": "/sorting",
-    "BFS & DFS": "/bfs-dfs",
-    "Dijkstra / Floyd-Warshall": "/dijkstra-floyd",
-    "Code Execution": "/code-exec"
+    "Problem Repository": "http://repo.dsa.lab.local/",
+    "Tree Traversals": "http://tree.dsa.lab.local/",
+    "Sorting Visualizer": "http://sort.dsa.lab.local/",
+    "BFS & DFS": "http://bfs.dsa.lab.local/",
+    "Dijkstra / Floyd-Warshall": "http://dij.dsa.lab.local/",
 }
 
 for label, path in pages.items():

@@ -4,58 +4,89 @@ metadata:
   name: dsa-lab
   namespace: dsa-lab
   annotations:
-    nginx.ingress.kubernetes.io/rewrite-target: /
+    nginx.ingress.kubernetes.io/backend-protocol: "HTTP"
+    nginx.ingress.kubernetes.io/proxy-read-timeout: "3600"
+    nginx.ingress.kubernetes.io/proxy-send-timeout: "3600"
+    nginx.ingress.kubernetes.io/proxy-http-version: "1.1"
+    nginx.ingress.kubernetes.io/enable-websocket: "true"
+    nginx.ingress.kubernetes.io/use-regex: "true"
+    nginx.ingress.kubernetes.io/proxy-buffer-size: "128k"
+    nginx.ingress.kubernetes.io/proxy-buffers-number: "4"
+    nginx.ingress.kubernetes.io/proxy-connect-timeout: "30"
+    nginx.ingress.kubernetes.io/proxy-buffering: "off"
+    nginx.ingress.kubernetes.io/proxy-request-buffering: "off"
+    nginx.ingress.kubernetes.io/connection-proxy-header: "keep-alive"
+    nginx.ingress.kubernetes.io/proxy-connection-header: "keep-alive"
 spec:
+  ingressClassName: nginx
   rules:
-    - host: dsa.lab.local
+    - host: landing.dsa.lab.local
       http:
         paths:
-          - path: /landing-page
+          - path: /
             pathType: Prefix
             backend:
               service:
                 name: landing-page-service
                 port:
-                  number: 80
-          - path: /problem-repo
+                  number: 8501
+    - host: repo.dsa.lab.local
+      http:
+        paths:
+          - path: /
             pathType: Prefix
             backend:
               service:
                 name: problem-repo
                 port:
-                  number: 80
-          - path: /code-exec
+                  number: 8501
+    - host: exec.dsa.lab.local
+      http:
+        paths:
+          - path: /
             pathType: Prefix
             backend:
               service:
                 name: code-exec
                 port:
-                  number: 80
-          - path: /bfs-dfs
+                  number: 8501
+    - host: bfs.dsa.lab.local
+      http:
+        paths:
+          - path: /
             pathType: Prefix
             backend:
               service:
                 name: bfs-dfs
                 port:
-                  number: 80
-          - path: /dij-flw
+                  number: 8501
+    - host: dij.dsa.lab.local
+      http:
+        paths:
+          - path: /
             pathType: Prefix
             backend:
               service:
                 name: dij-flw
                 port:
-                  number: 80
-          - path: /sorting
+                  number: 8501
+    - host: sort.dsa.lab.local
+      http:
+        paths:
+          - path: /
             pathType: Prefix
             backend:
               service:
                 name: sorting
                 port:
-                  number: 80
-          - path: /tree-traversal
+                  number: 8501
+    - host: tree.dsa.lab.local
+      http:
+        paths:
+          - path: /
             pathType: Prefix
             backend:
               service:
                 name: tree-traversal
                 port:
-                  number: 80
+                  number: 8501

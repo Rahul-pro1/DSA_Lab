@@ -7,7 +7,7 @@ st.set_page_config(page_title="Problem Repository", layout="wide")
 st.title("Problem Repository")
 
 if st.button("Back to Home"):
-    st.markdown('<meta http-equiv="refresh" content="0; URL=/">', unsafe_allow_html=True)
+    st.markdown('<meta http-equiv="refresh" content="0; URL=http://landing.dsa.lab.local">', unsafe_allow_html=True)
 
 problems = list(problems_collection.find({}))
 st.subheader("Existing Problems")
@@ -19,7 +19,7 @@ if problems:
             st.markdown(f"**Output Format:** {p['output_format']}")
             st.markdown(f"**Supported Languages:** {', '.join(p['language'])}")
             st.markdown(f"**Test Cases:**")
-            solve_url = f"/code-exec/?title={urllib.parse.quote(p['title'])}"
+            solve_url = f"http://exec.dsa.lab.local/?title={urllib.parse.quote(p['title'])}"
             st.markdown(f"[🛠 Solve Now]({solve_url})", unsafe_allow_html=True)
 
             for i, tc in enumerate(p["test_cases"]):

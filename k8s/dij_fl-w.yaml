@@ -2,6 +2,7 @@ apiVersion: apps/v1
 kind: Deployment
 metadata:
   name: dij-flw
+  namespace: dsa-lab
 spec:
   replicas: 1
   selector:
@@ -16,15 +17,18 @@ spec:
         - name: dij-flw
           image: rahulsivakumar/dij_fl-w:latest
           ports:
-            - containerPort: 8504
+            - containerPort: 8501
+
+---
 
 apiVersion: v1
 kind: Service
 metadata:
   name: dij-flw
+  namespace: dsa-lab
 spec:
   selector:
     app: dij-flw
   ports:
     - port: 80
-      targetPort: 8504
+      targetPort: 8501
